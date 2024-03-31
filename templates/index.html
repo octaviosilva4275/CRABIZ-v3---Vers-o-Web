@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat App - Login/Cadastro</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='index.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Bem-vindo ao Crabizap</h1>
+      {% if mensagem %}
+      <p class="error-message">{{ mensagem }}</p>
+      {% endif %}
+
+      <h2>Cadastro</h2>
+      <form id="cadastro-form" class="form" action="/cadastro" method="post">
+        <div class="form-control">
+          <label for="cadastro-telefone">Telefone:</label><br />
+          <input type="text" id="cadastro-telefone" name="telefone" /><br />
+        </div>
+        <div class="form-control">
+          <label for="cadastro-nome">Nome:</label><br />
+          <input type="text" id="cadastro-nome" name="nome" /><br />
+        </div>
+        <div class="form-control">
+          <label for="cadastro-senha">Senha:</label><br />
+          <input type="password" id="cadastro-senha" name="senha" /><br /><br />
+        </div>
+        <button type="submit" onclick="checkCadastroInputs()">Cadastrar</button>
+        <!-- Mudado para type="button" -->
+      </form>
+
+      <h2>Login</h2>
+      <form id="login-form" class="form" method="POST" action="/login">
+        <div class="form-control">
+          <label for="login-telefone">Telefone:</label><br />
+          <input type="text" id="login-telefone" name="telefone" /><br />
+        </div>
+        <div class="form-control">
+          <label for="login-senha">Senha:</label><br />
+          <input type="password" id="login-senha" name="senha" /><br /><br />
+        </div>
+        <button type="submit" onclick="checkLoginInputs()">Login</button>
+        <!-- Mudado para type="button" -->
+      </form>
+    </div>
+
+    <script>
+      function checkCadastroInputs() {
+        const cadastroTelefone = document.getElementById("cadastro-telefone");
+        const cadastroNome = document.getElementById("cadastro-nome");
+        const cadastroSenha = document.getElementById("cadastro-senha");
+
+        const cadastroTelefoneValue = cadastroTelefone.value.trim();
+        const cadastroNomeValue = cadastroNome.value.trim();
+        const cadastroSenhaValue = cadastroSenha.value.trim();
+
+        if (cadastroTelefoneValue === "") {
+          setErrorFor(cadastroTelefone, "O telefone é obrigatório.");
+        } else {
+          setSuccessFor(cadastroTelefone);
+        }
+
+        if (cadastroNomeValue === "") {
+          setErrorFor(cadastroNome, "O nome é obrigatório.");
+        } else {
+          setSuccessFor(cadastroNome);
+        }
+
+        if (cadastroSenhaValue === "") {
+          setErrorFor(cadastroSenha, "A senha é obrigatória.");
+        } else {
+          setSuccessFor(cadastroSenha);
+        }
+      }
+
+      function checkLoginInputs() {
+        const loginTelefone = document.getElementById("login-telefone");
+        const loginSenha = document.getElementById("login-senha");
+
+        const loginTelefoneValue = loginTelefone.value.trim();
+        const loginSenhaValue = loginSenha.value.trim();
+
+        if (loginTelefoneValue === "") {
+          setErrorFor(loginTelefone, "O telefone é obrigatório.");
+        } else {
+          setSuccessFor(loginTelefone);
+        }
+
+        if (loginSenhaValue === "") {
+          setErrorFor(loginSenha, "A senha é obrigatória.");
+        } else {
+          setSuccessFor(loginSenha);
+        }
+      }
+
+      function setErrorFor(input, message) {
+        const formControl = input.parentElement;
+        const small = formControl.querySelector("small");
+
+        small.innerText = message;
+        formControl.className = "form-control error";
+      }
+
+      function setSuccessFor(input) {
+        const formControl = input.parentElement;
+        formControl.className = "form-control success";
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whatsapp</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="leftSide">
+        <!-- Cabeçalho -->
+        <div class="header">
+          <div class="userimg">
+            <img
+              src="{{ url_for('static', filename='perfil.png') }}"
+              alt="User"
+              class="cover"
+            />
+          </div>
+          <ul class="nav_icons">
+            <li><ion-icon name="scan-circle-outline"></ion-icon></li>
+            <li><ion-icon name="chatbox"></ion-icon></li>
+            <li><ion-icon name="ellipsis-vertical"></ion-icon></li>
+          </ul>
+        </div>
+        <!-- Busca -->
+        <div class="search_chat">
+          <div>
+            <input type="text" placeholder="Search" />
+            <ion-icon name="search-outline"></ion-icon>
+          </div>
+        </div>
+        <!-- Lista de chats -->
+        <div class="chatlist">
+          {% for contato in contatos %}
+          <!-- Adicione um evento de clique ao bloco do contato -->
+          <div
+            class="block active"
+            onclick="selecionarECarregarMensagens('{{ contato.nome }}')"
+          >
+            <div class="imgbx">
+              <img
+                src="{{ url_for('static', filename='perfil.png') }}"
+                class="cover"
+                alt=""
+              />
+            </div>
+            <div class="details">
+              <div class="listHead">
+                <h4>{{ contato.nome }}</h4>
+                <p class="time">10:50</p>
+              </div>
+              <div class="message_p">
+                <p>Teste Whatsapp</p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="rightSide">
+        <div class="header">
+          <div class="imgText">
+            <div class="userimg">
+              <img
+                src="{{ url_for('static', filename='perfil.png') }}"
+                alt="User"
+                class="cover"
+              />
+            </div>
+            <h4 id="nomeDestinatario">User 01 <br /><span>Online</span></h4>
+          </div>
+          <ul class="nav_icons">
+            <li><ion-icon name="search-outline"></ion-icon></li>
+            <li><ion-icon name="ellipsis-vertical"></ion-icon></li>
+          </ul>
+        </div>
+
+        <div class="chatBox" id="chatBox">
+          {% for mensagem in mensagens %}
+          <div
+            class="message {% if mensagem.remetente == session.usuario.nome %}my_message{% else %}frnd_message{% endif %}"
+          >
+            <div>
+              <p>
+                {{ mensagem.mensagem }}
+                <br />
+                <span>Enviado por: {{ mensagem.remetente }}</span>
+                <span>Para: {{ mensagem.nome }}</span>
+              </p>
+            </div>
+          </div>
+          {% if loop.last %}
+          <!-- Adicione um ID único à última mensagem na lista de mensagens -->
+          <div id="lastMessage"></div>
+          {% endif %} {% endfor %}
+        </div>
+
+        <!-- Formulário de envio de mensagem -->
+        <form id="formEnviarMensagem" action="/enviar" method="post">
+          <div class="chatbox_input">
+            <input
+              type="text"
+              placeholder="Digite uma mensagem"
+              id="mensagemInput"
+              name="mensagem"
+              required
+            />
+            <select id="destinatarioSelect" name="destinatario" required>
+              <option value="">Selecione o destinatário</option>
+              {% for contato in contatos %}
+              <option value="{{ contato.nome }}">{{ contato.nome }}</option>
+              {% endfor %}
+            </select>
+            <button type="button" onclick="enviarMensagem()">
+              <ion-icon name="send"></ion-icon>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      window.onload = function () {
+        // Recuperar o nome do destinatário atual da página
+        var nomeContatoAtual =
+          document.getElementById("nomeDestinatario").innerText;
+
+        // Carregar as mensagens do destinatário atual
+        selecionarECarregarMensagens(nomeContatoAtual);
+      };
+      // Função para selecionar o destinatário ao clicar em um contato
+      function selecionarDestinatario(nomeContato) {
+        document.getElementById("destinatarioSelect").value = nomeContato;
+        document.getElementById("nomeDestinatario").innerText = nomeContato;
+      }
+
+      // Função para carregar mensagens quando um contato é selecionado e definir o destinatário
+      function selecionarECarregarMensagens(nomeContato) {
+        // Seleciona o destinatário e atualiza o nome exibido
+        selecionarDestinatario(nomeContato);
+
+        // Cria uma nova requisição AJAX
+        var xhr = new XMLHttpRequest();
+
+        // Define a função que será chamada quando o estado da requisição mudar
+        xhr.onreadystatechange = function () {
+          // Verifica se a requisição foi completada com sucesso
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              // Substitui o conteúdo da div 'chatBox' com as mensagens recebidas do servidor
+              document.getElementById("chatBox").innerHTML = xhr.responseText;
+            }
+          }
+        };
+
+        // Abre a conexão e envia a requisição para obter as mensagens do contato selecionado
+        xhr.open(
+          "GET",
+          "/mensagens?contato=" + encodeURIComponent(nomeContato),
+          true
+        );
+        xhr.send(); // Envio da requisição
+      }
+      window.onload = function () {
+        var lastMessage = document.getElementById("lastMessage");
+        if (lastMessage) {
+          lastMessage.scrollIntoView({ behavior: "smooth", block: "end" });
+        }
+      };
+    </script>
+
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"
+    ></script>
+  </body>
+</html>

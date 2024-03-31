@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <title>Chat App - Login/Cadastro</title>
+    <style>
+        /* Estilo para o corpo da página */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        /* Estilo para os títulos */
+        h1 {
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        /* Estilo para os formulários */
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilo para os rótulos dos campos */
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        /* Estilo para os campos de entrada */
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            /* Garante que o padding não aumente a largura total do campo */
+        }
+
+        /* Estilo para o botão de envio */
+        button[type="submit"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Estilo para o botão de envio quando passa o mouse por cima */
+        button[type="submit"]:hover,
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilo para mensagens de erro */
+        .error-message {
+            color: #ff0000;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h3 id="resultado"></h3>
+    <h2>Cadastro</h2>
+    <h1>Login</h1>
+    <form action="/login" method="post">
+        <label for="telefone">Telefone:</label>
+        <input type="text" id="telefone" name="telefone" required><br>
+        <label for="senha">Senha:</label>
+        <input type="password" id="senha" name="senha" required><br>
+        <button type="submit">Login</button>
+    </form>
+    <br>
+    <h1>Cadastro</h1>
+    <form id="cadastroForm">
+        <label for="nome">Nome:</label><br>
+        <input type="text" id="nome" name="nome" required><br>
+        <label for="telefoneCadastro">Telefone:</label><br>
+        <input type="text" id="telefoneCadastro" name="telefone" required><br>
+        <label for="senhaCadastro">Senha:</label><br>
+        <input type="password" id="senhaCadastro" name="senha" required><br>
+        <button id="bt_cadastrar" type="button">Cadastrar</button>
+    </form>
+    <h2>Mensagens Recebidas</h2>
+    <div id="mensagens">
+        {% for mensagem in mensagens %}
+            <p><strong>{{ mensagem.nome }}:</strong> {{ mensagem.mensagem }}</p>
+        {% endfor %}
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Evento de clique para o botão de cadastrar
+            $("#bt_cadastrar").click(function() {
+                enviarCadastro();
+            });
+        });
+
+        // Função para enviar o cadastro via AJAX
+        function enviarCadastro() {
+            // Obtendo os valores dos campos
+            var nome = $("#nome").val();
+            var telefone = $("#telefoneCadastro").val();
+            var senha = $("#senhaCadastro").val();
+
+            // Dados do cadastro
+            var dadosCadastro = {
+                nome: nome,
+                telefone: telefone,
+                senha: senha
+            };
+
+            // Enviando os dados para o servidor via AJAX
+            $.ajax({
+                url: '/cadastro',
+                type: 'POST',
+                data: JSON.stringify(dadosCadastro),
+                contentType: 'application/json',
+                success: function(response) {
+                    // Manipular a resposta do servidor aqui, se necessário
+                    $("#resultado").text(response); // Exibir resposta do servidor
+                },
+                error: function() {
+                    // Manipular erros de requisição aqui
+                    $("#resultado").text("Erro ao cadastrar. Por favor, tente novamente."); // Exibir mensagem de erro
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
